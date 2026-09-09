@@ -1,0 +1,19 @@
+{
+  "width": 320,
+  "height": 480,
+  "framebuffer": "/dev/fb0",
+  "cache": "state.json",
+  "latitude": 35.6762,
+  "longitude": 139.6503,
+  "timezone": "Asia/Tokyo",
+  "hosts": [
+    {"label": "HOST1", "tailscale_hostname": "host-one"},
+    {"label": "HOST2", "tailscale_hostname": "host-two"},
+    {"label": "HOST3", "tailscale_hostname": "host-three"},
+    {"label": "POC", "tailscale_hostname": "poc-host"}
+  ],
+  "backup_markers": [
+    {"path": "/path/to/backup-success-marker", "max_age_hours": 36},
+    {"path": "/path/to/second-success-marker", "max_age_hours": 36}
+  ]
+}
