@@ -22,6 +22,11 @@ class DashboardTests(unittest.TestCase):
         image = Image.new("RGB", (320, 480), "black")
         self.assertEqual(len(dashboard.rgb565_bytes(image)), 320 * 480 * 2)
 
+    def test_rgb565_asymmetric_pixel_order(self):
+        image = Image.new("RGB", (2, 2))
+        image.putdata([(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255)])
+        self.assertEqual(dashboard.rgb565_bytes(image), bytes.fromhex("00f8e0071f00ffff"))
+
     def test_weather_precedence(self):
         self.assertEqual(dashboard.weather_kind(self.weather), ("rain", "RAIN LIKELY"))
         self.assertEqual(dashboard.weather_kind({"temp": 32, "code": 0, "rain": 0})[0], "hot")

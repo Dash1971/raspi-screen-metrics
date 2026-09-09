@@ -23,14 +23,16 @@ rgba 5/11,6/5,5/0,0/0
 /sys/class/graphics/fb0/rotate = 90
 ```
 
-PNG previews are correct at 320x480, but direct row-major RGB565 writes appear
-rotated on the physical panel. Roughly half the panel is blank and the top
-USD/JPY section is clipped. The current framebuffer writer does not transform
-pixels for the kernel-reported rotation. Review of the relationship among
-logical geometry, physical geometry, rotation, stride, and byte order is the
-main reason this repository was published.
+PNG previews and software framebuffer readback are complete, but the physical
+panel shows rotated and clipped content. Live diagnostics found reversed native
+controller dimensions in the boot overlay: `width=480,height=320,rotate=90`.
+The ILI9486 driver defines native 320x480 dimensions and applies rotation itself.
+The first correction to test for this portrait layout is
+`width=320,height=480,rotate=0`. Physical verification is still pending.
 
-See [KNOWN_ISSUE.md](KNOWN_ISSUE.md) for exact observations and review questions.
+See [KNOWN_ISSUE.md](KNOWN_ISSUE.md) for evidence, kernel references, and the repair
+and validation procedure. See [CODE_REVIEW.md](CODE_REVIEW.md) for separate
+application findings. Neither document claims a verified hardware fix.
 
 ## Setup
 
@@ -59,7 +61,13 @@ Inspect the actual framebuffer before assuming its geometry:
 fbset -s
 cat /sys/class/graphics/fb0/virtual_size
 cat /sys/class/graphics/fb0/rotate
+python tools/inspect_framebuffer.py --device /dev/fb0
 ```
+
+The inspection tool opens the device read-only and prints geometry, stride,
+offsets, pixel bitfields, and the number of framebuffer bytes read. It does not
+print pixel contents or write to the display. It requires Linux and framebuffer
+read permission, and uses only the Python standard library.
 
 No API keys are required. FX data comes from Yahoo Finance and weather data
 comes from Open-Meteo. Host status requires the local Tailscale CLI.
